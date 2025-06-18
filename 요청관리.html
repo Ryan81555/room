@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>요청사항 관리 (관리자)</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <style>
+    body { background: linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%); }
+    .admin-container { max-width: 900px; margin: 32px auto; background: rgba(255,255,255,0.92); border-radius: 18px; box-shadow: 0 8px 32px rgba(52,152,219,0.13); padding: 24px 8px; }
+    .admin-title { text-align:center; color:#2563eb; margin-bottom:18px; font-size:1.4em; font-weight:700; }
+    .tabs { display:flex; justify-content:center; gap:8px; margin-bottom:18px; }
+    .tab-btn { background:#f0fdfa; color:#2563eb; border:1px solid #60a5fa; border-radius:8px 8px 0 0; padding:10px 28px; font-weight:600; cursor:pointer; font-size:1.1em; transition:background 0.2s; }
+    .tab-btn.active, .tab-btn:hover { background:#60a5fa; color:#fff; }
+    .request-list { width:100%; max-width:860px; margin:0 auto; }
+    .request-table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(52,152,219,0.08); }
+    .request-table th, .request-table td { padding:10px 6px; text-align:center; border-bottom:1px solid #e5e7eb; }
+    .request-table th { background:#e0e7ff; color:#2563eb; font-weight:700; }
+    .request-table tr:last-child td { border-bottom:none; }
+    .status-badge { display:inline-block; padding:3px 10px; border-radius:8px; font-size:0.98em; font-weight:600; }
+    .status-대기 { background:#fef9c3; color:#eab308; }
+    .status-진행 { background:#dbeafe; color:#2563eb; }
+    .status-완료 { background:#dcfce7; color:#22c55e; }
+    .action-btn { padding:6px 16px; border:none; border-radius:8px; font-weight:600; cursor:pointer; margin:0 2px; }
+    .action-진행 { background:#2563eb; color:#fff; }
+    .action-완료 { background:#22c55e; color:#fff; }
+    @media (max-width: 700px) {
+      .admin-container {
+        max-width: 99vw;
+        padding: 8px 2vw;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+      }
+      .admin-title {
+        font-size: 1.1em;
+        padding: 10px 0;
+      }
+      .tabs {
+        flex-direction: column;
+        gap: 4px;
+      }
+      .tab-btn {
+        width: 100%;
+        border-radius: 8px;
+        padding: 12px 0;
+        font-size: 1em;
+      }
+      .request-list {
+        max-width: 99vw;
+        overflow-x: auto;
+      }
+      .request-table {
+        min-width: 700px;
+        font-size: 0.97em;
+      }
+      .request-table th, .request-table td {
+        font-size: 0.97em;
+        padding: 7px 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 사운드 알림 오디오 태그 -->
+  <audio id="notifySound" src="sound/mlg-airhorn.mp3" preload="auto"></audio>
+  <div class="admin-container">
+    <div class="admin-title">요청사항 관리 (관리자)</div>
+    <div class="tabs">
+      <button class="tab-btn active" data-status="대기">대기</button>
+      <button class="tab-btn" data-status="진행">진행</button>
+      <button class="tab-btn" data-status="완료">완료</button>
+    </div>
+    <div class="request-list">
+      <table class="request-table" id="requestTable">
+        <thead>
+          <tr>
+            <th>동/호수</th>
+            <th>전화번호</th>
+            <th>요청유형</th>
+            <th>상세내용</th>
+            <th>요청시간</th>
+            <th>상태</th>
+            <th>처리</th>
+          </tr>
+        </thead>
+        <tbody id="requestTbody">
+          <tr><td colspan="6" style="color:#bbb;">로딩 중...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- 알림 테스트 버튼 (브라우저 정책 우회용) -->
+    <button onclick="document.getElementById('notifySound').play()" style="margin:20px auto;display:block;">🔔 알림 테스트</button>
+  </div>
+  <script>
+    let allRequests = [];
+    let currentTab = '대기';
+    let lastRequestCount = 0;
+
+    // 브라우저 푸쉬알림 권한 요청
+    if (window.Notification && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
+    async function fetchRequests() {
+      const res = await fetch('http://localhost:3001/api/requests');
+      if (res.ok) {
+        const data = await res.json();
+        // 새 요청이 들어왔는지 체크
+        const newCount = data.filter(r => r.status === '대기').length;
+        if (newCount > lastRequestCount) {
+          // 사운드 알림
+          document.getElementById('notifySound').play();
+          // 푸쉬알림
+          if (window.Notification && Notification.permission === "granted") {
+            new Notification("새로운 요청이 도착했습니다!", {
+              body: "고객 요청을 확인해 주세요."
+            });
+          }
+        }
+        lastRequestCount = newCount;
+        allRequests = data;
+        renderTable();
+      }
+    }
+    function renderTable() {
+      const tbody = document.getElementById('requestTbody');
+      const filtered = allRequests.filter(r => r.status === currentTab);
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:#bbb;">해당 상태의 요청이 없습니다.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtered.map(r => `
+      <tr>
+        <td>${r.room}</td>
+        <td>${r.phone ? r.phone : '-'}</td>
+        <td>${r.type}</td>
+        <td>${r.detail ? r.detail.replace(/\n/g,'<br>') : '-'}</td>
+        <td>${new Date(r.createdAt).toLocaleString('ko-KR')}</td>
+        <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+        <td>
+          ${r.status === '대기' ? `<button class="action-btn action-진행" onclick="changeStatus(${r.id},'진행')">진행</button>` : ''}
+          ${r.status === '진행' ? `<button class="action-btn action-완료" onclick="changeStatus(${r.id},'완료')">완료</button>` : ''}
+        </td>
+      </tr>
+    `).join('');
+    }
+    async function changeStatus(id, status) {
+      const res = await fetch(`http://localhost:3001/api/requests/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        await fetchRequests();
+      } else {
+        alert('상태 변경에 실패했습니다.');
+      }
+    }
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = function() {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentTab = this.getAttribute('data-status');
+        renderTable();
+      };
+    });
+    // 5초마다 자동 새로고침
+    setInterval(fetchRequests, 5000);
+    fetchRequests();
+  </script>
+</body>
+</html>

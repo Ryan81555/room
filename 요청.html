@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>객실 요청/문의</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <style>
+    *,
+    *::before,
+    *::after {
+    box-sizing: border-box;
+    }
+    body { background: linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%); margin: 0; padding: 0; }
+    .request-container { max-width: 420px; margin: 32px auto; background: rgba(255,255,255,0.95); border-radius: 18px; box-shadow: 0 8px 32px rgba(52,152,219,0.13); padding: 24px 16px; }
+    .request-title { text-align:center; color:#2563eb; margin-bottom:18px; font-size:1.4em; font-weight:700; }
+    .input-group { margin-bottom: 18px; }
+    .input-label { font-weight:600; margin-bottom:6px; display:block; color:#2563eb; }
+    .input-field, textarea { width:100%; padding:12px; border-radius:8px; border:1px solid #bcd; font-size:1.1em; }
+    .quick-btns { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+    .quick-btn { flex:1 1 45%; background:#f0fdfa; color:#2563eb; border:1px solid #60a5fa; border-radius:8px; padding:12px 0; font-weight:600; cursor:pointer; transition:background 0.2s; font-size:1.05em; }
+    .quick-btn.selected, .quick-btn:hover { background:#60a5fa; color:#fff; }
+    .submit-btn { width:100%; background:#2563eb; color:#fff; border:none; border-radius:8px; padding:15px 0; font-size:1.15em; font-weight:700; cursor:pointer; margin-top:10px; }
+    #adminLoginBox { max-width:340px;margin:40px auto 0 auto;background:#fff;border-radius:12px;box-shadow:0 4px 16px #0001;padding:32px 18px; }
+    @media (max-width: 700px) {
+      .request-container { max-width:100vw; padding: 0 0 24px 0; border-radius:0; box-shadow:none; margin:0; }
+      .request-title { font-size:1.1em; padding:10px 0; }
+      .input-field, textarea { font-size:1.05em; padding:14px 8px; }
+      .quick-btns { flex-direction:column; gap:7px; }
+      .quick-btn { width:100%; min-width:0; font-size:1.07em; padding:15px 0; }
+      .submit-btn { font-size:1.13em; padding:16px 0; }
+      #adminLoginBox { max-width:99vw; border-radius:0; box-shadow:none; margin:0; }
+    }
+    .notice-msg {
+      background: #f0fdfa;
+      color: #2563eb;
+      border: 1px solid #60a5fa;
+      border-radius: 8px;
+      padding: 12px 10px;
+      margin-bottom: 18px;
+      font-size: 1.05em;
+      text-align: center;
+    }
+    .notice-guide
+    {
+      background: #f0fdfa;
+      color: #2563eb;
+      border: 1px solid #60a5fa;
+      border-radius: 8px;
+      padding: 12px 10px;
+      margin-bottom: 18px;
+      font-size: 1.05em;
+      text-align: center;
+    }
+    @media (max-width: 700px) {
+      .request-container {
+        max-width: 99vw;
+        padding: 8vw 2vw;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+      }
+      .request-title {
+        font-size: 1.1em;
+        padding: 10px 0;
+      }
+      .input-field, textarea {
+        font-size: 1.05em;
+        padding: 14px 8px;
+      }
+      .quick-btns {
+        flex-direction: column;
+        gap: 7px;
+      }
+      .quick-btn {
+        width: 100%;
+        min-width: 0;
+        font-size: 1.07em;
+        padding: 15px 0;
+      }
+      .submit-btn {
+        font-size: 1.13em;
+        padding: 16px 0;
+      }
+      #adminLoginBox {
+        max-width: 99vw;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+      }
+      .cafe-promo {
+        padding: 6vw 2vw !important;
+        font-size: 1em !important;
+      }
+      .cafe-promo img {
+        width: 98% !important;
+        max-width: 99vw !important;
+        height: auto !important;
+      }
+      .cafe-gallery {
+        flex-wrap: wrap;
+        gap: 6px !important;
+      }
+      .cafe-gallery img {
+        width: 44vw !important;
+        max-width: 140px !important;
+        min-width: 90px !important;
+        margin-bottom: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="notifySound" src="문의사항/sound/mlg-airhorn.mp3" preload="auto"></audio>
+  <div class="request-container">
+    <div class="request-title">가평 월드빌리지<br>객실 요청/문의</div>
+    <div class="notice-msg">
+      원활한 서비스 제공과 시스템 안정화를 위해 <br>문의 및 요청사항 접수는 <br><b>3분에 한 번</b>으로 제한됩니다.<br>
+      짧은 시간에 중복 요청 시 시스템에<br> 과부하가 발생하거나 요청이 누락될 수 있으니, <br>이용자 여러분의 너그러운 양해 부탁드립니다.<br>
+      <span style="color:#e11d48;">잠시 후 다시 시도해 주시면 감사하겠습니다.</span>
+    </div>
+    <div class="request-container">
+      <!-- 여기! -->
+      <div class="notice-guide"> <h3>초간단 요청사항 및 문의사항 방법</h3>
+
+        <p>
+            <strong>1. 내 정보 입력</strong><br>
+            동/호수와 전화번호를 정확히 적어주세요.
+        </p>
+        
+        <p>
+            <strong>2. 요청사항 선택</strong><br>
+            자주 있는 요청 버튼을 누르거나, <br>아래 기타 요청사항에 직접 입력하세요.
+        </p>
+        
+        <p>
+            <strong>3. 전송하면 끝!</strong><br>
+            파란색 요청하기 버튼을 누르면 <br>바로 접수됩니다.
+        </p>
+        
+        <hr>
+        
+        <p>
+            <strong>★ 중요:</strong> 원활한 처리를 위해<br> 요청은 3분에 한 번씩만 가능합니다!
+        </p> </div>
+      <div class="request-title">객실 요청/문의</div>
+      <!-- 이하 생략 -->
+    </div>
+    <form id="requestForm">
+      <div class="input-group">
+        <label class="input-label" for="room">동/호수</label>
+        <input class="input-field" type="text" id="room" name="room" placeholder="예:C동 101" required>
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="phone">전화번호</label>
+        <input class="input-field" type="tel" id="phone" name="phone" placeholder="예: 010-1234-5678" required>
+      </div>
+      <div class="input-group">
+        <span class="input-label">자주 있는 요청</span>
+        <div class="quick-btns">
+          <button type="button" class="quick-btn" data-type="예약상담">예약상담</button>
+          <button type="button" class="quick-btn" data-type="휴지가 없어요">휴지가 없어요</button>
+          <button type="button" class="quick-btn" data-type="TV가 안 나와요">TV가 안 나와요</button>
+          <button type="button" class="quick-btn" data-type="변기가 막혔어요">변기가 막혔어요</button>
+          <button type="button" class="quick-btn" data-type="화장실 문이 잠겼어요">화장실 문이 잠겼어요</button>
+          <button type="button" class="quick-btn" data-type="침구류를 추가하고 싶어요.">침구류를 추가하고 싶어요.</button>
+          <button type="button" class="quick-btn" data-type="에어컨/난방이 잘 안 돼요.">에어컨/난방이 잘 안 돼요.</button>
+          <button type="button" class="quick-btn" data-type="와이파이가 연결되지 않아요.">와이파이가 연결되지 않아요.</button>
+          <button type="button" class="quick-btn" data-type="인덕션 작동하지 않아요.">인덕션 작동하지 않아요.</button>
+          <button type="button" class="quick-btn" data-type="다른 객실이 너무 시끄러워요.">다른 객실이 너무 시끄러워요.</button>
+          <button type="button" class="quick-btn" data-type="온수가 안나와요">온수가 안나와요</button>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="detail">기타 요청사항</label>
+        <textarea id="detail" name="detail" rows="3" placeholder="기타 요청사항을 입력해 주세요."></textarea>
+      </div>
+      <button type="submit" class="submit-btn">요청하기</button>
+    </form>
+    <div id="resultMsg" style="display:none;"></div>
+  </div>
+  <!-- 요청 완료 모달 -->
+  <div id="successModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(52,152,219,0.18);padding:38px 24px;max-width:90vw;text-align:center;">
+      <div style="font-size:1.35em;font-weight:700;color:#22c55e;margin-bottom:12px;">정상적으로 요청이 완료되었습니다!<br>원활한 서비스 제공을 위해 요청은 3분에 한 번씩만 가능합니다.</div>
+      <button id="closeModalBtn" style="margin-top:10px;padding:10px 28px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:1em;font-weight:600;cursor:pointer;">확인</button>
+    </div>
+  </div>
+  <div class="cafe-promo" style="
+  background: #fff7ed;
+  border: 1.5px solid #fdba74;
+  border-radius: 14px;
+  padding: 22px 14px;
+  margin: 32px 0 18px 0;
+  color: #b45309;
+  font-size: 1.08em;
+  box-shadow: 0 4px 16px #fdba741a;
+  text-align: center; /* 가운데 정렬 추가 */
+">
+  <div style="font-size:1.25em; font-weight:700; color:#ea580c; margin-bottom:10px;">
+    🎉 월드빌리지 고객 전용 가평 카페 특별 할인!
+  </div>
+  <div style="margin-bottom:10px;">
+    저희 월드빌리지에 오신 분들께만 드리는 혜택!<br>
+    <b>가평 "카페 레이크애비뉴"</b>에서 <span style="color:#ea580c;font-weight:600;">음료 전품목 10% 할인</span>을 받으실 수 있습니다.<br>
+    <span style="color:#b91c1c;">(※ 베이커리류는 할인 제외)</span>
+  </div>
+  <div style="margin-bottom:10px;">
+    <b>할인 방법:</b> 체크인 시 받으신 안내 문자 내역을 카페 직원에게 보여주세요!
+  </div>
+  <div style="margin-bottom:10px;">
+    <b>카페 위치:</b> 가평군 호반로 1526 (월드빌리지에서 차량 10분) 설악 IC 방향
+  </div>
+<!-- 갤러리 전체를 감싸는 div -->
+<div class="cafe-gallery" style="display: flex; flex-direction: column; gap: 8px; align-items: center; margin-top: 10px;">
+  <!-- 1층 (윗줄) -->
+  <div style="display: flex; gap: 10px;">
+    <img src="images/101.jpg" alt="카페 전경1" style="width: 300px; height: 200px; border-radius: 8px; border: 1px solid #fdba74; cursor: pointer;" onclick="openImageModal(this.src)">
+    <img src="images/102.jpg" alt="카페 전경2" style="width: 300px; height: 200px; border-radius: 8px; border: 1px solid #fdba74; cursor: pointer;" onclick="openImageModal(this.src)">
+  </div>
+  <!-- 2층 (아랫줄) -->
+  <div style="display: flex; gap: 10px;">
+    <img src="images/104.jpg" alt="카페 전경3" style="width: 300px; height: 200px; border-radius: 8px; border: 1px solid #fdba74; cursor: pointer;" onclick="openImageModal(this.src)">
+    <img src="images/105.jpg" alt="카페 전경4" style="width: 300px; height: 200px; border-radius: 8px; border: 1px solid #fdba74; cursor: pointer;" onclick="openImageModal(this.src)">
+  </div>
+</div>
+</div>
+  <script>
+    let selectedType = '';
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+      btn.onclick = function() {
+        document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedType = this.getAttribute('data-type');
+      };
+    });
+    document.getElementById('requestForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const room = document.getElementById('room').value.trim();
+      const phone = document.getElementById('phone').value.trim(); // 추가
+      const detail = document.getElementById('detail').value.trim();
+      if (!room) { alert('객실번호를 입력해 주세요.'); return; }
+      if (!phone) { alert('전화번호를 입력해 주세요.'); return; } // 추가
+      if (!selectedType && !detail) { alert('요청사항을 선택하거나 입력해 주세요.'); return; }
+      const res = await fetch('http://localhost:3001/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room, phone, type: selectedType || '기타', detail }) // phone 포함!
+      });
+      if (res.ok) {
+        document.getElementById('requestForm').reset();
+        document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('selected'));
+        selectedType = '';
+        // 모달 표시
+        document.getElementById('successModal').style.display = 'flex';
+      } else {
+        alert('요청 접수에 실패했습니다. 다시 시도해 주세요.');
+      }
+    };
+    // 모달 닫기
+    document.getElementById('closeModalBtn').onclick = function() {
+      document.getElementById('successModal').style.display = 'none';
+    };
+
+    // 관리자 비밀번호 (원하는 값으로 변경)
+const ADMIN_PASSWORD = "1579";
+
+document.getElementById('adminLoginBtn').onclick = function() {
+  const pw = document.getElementById('adminPw').value;
+  if (pw === ADMIN_PASSWORD) {
+    window.location.href = "요청관리.html"; // 관리자 페이지로 이동
+  } else {
+    document.getElementById('adminLoginError').style.display = 'block';
+    document.getElementById('adminLoginError').innerText = '비밀번호가 올바르지 않습니다.';
+  }
+};
+
+// 브라우저 푸쉬알림 권한 요청
+if (window.Notification && Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
+
+async function fetchRequests() {
+  const res = await fetch('http://localhost:3001/api/requests');
+  if (res.ok) {
+    const data = await res.json();
+    // 새 요청이 들어왔는지 체크
+    const newCount = data.filter(r => r.status === '대기').length;
+    if (newCount > lastRequestCount) {
+      // 사운드 알림
+      document.getElementById('notifySound').play();
+      // 푸쉬알림
+      if (window.Notification && Notification.permission === "granted") {
+        new Notification("새로운 요청이 도착했습니다!", {
+          body: "고객 요청을 확인해 주세요.",
+          icon: "assets/css/main.css" // 아이콘 경로(원하면 변경)
+        });
+      }
+    }
+    lastRequestCount = newCount;
+    allRequests = data;
+    renderTable();
+  }
+}
+
+function openImageModal(src) {
+  document.getElementById('imgModalContent').src = src;
+  document.getElementById('imgModal').style.display = 'flex';
+}
+function closeImageModal() {
+  document.getElementById('imgModal').style.display = 'none';
+}
+  </script>
+  <div id="imgModal" style="display:none; position:fixed; z-index:99999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
+    <span onclick="closeImageModal()" style="position:absolute; top:24px; right:36px; color:#fff; font-size:2.5em; font-weight:700; cursor:pointer; z-index:100001;">&times;</span>
+    <img id="imgModalContent" src="" style="max-width:90vw; max-height:80vh; border-radius:14px; box-shadow:0 8px 32px #0008;">
+  </div>
+</body>
+</html> 
