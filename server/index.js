@@ -1,3 +1,8 @@
+// 맨 위에 추가
+console.log('=== 서버 시작 ===');
+console.log('현재 작업 디렉토리:', process.cwd());
+console.log('__dirname:', __dirname);
+
 // 기본 Node.js Express 서버 및 요청사항 API 뼈대
 const express = require('express');
 const fs = require('fs');
@@ -14,7 +19,7 @@ const ADMIN_VISIT_FILE = path.join(__dirname, 'admin_visitors.json');
 app.use(express.static(__dirname)); // server 폴더 내 모든 파일 서비스
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', '요청.html'));
+  res.sendFile(path.join(__dirname, '..', 'Room-Request.html'));
 });
 // ===============
 
@@ -135,4 +140,8 @@ app.post('/api/admin-visit', (req, res) => {
 app.get('/api/admin-visitors', (req, res) => {
   const visits = readAdminVisits().filter(v => Date.now() - v.time < 20*60*1000);
   res.json(visits);
+});
+
+app.listen(port, () => {
+  console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
 });
