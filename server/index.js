@@ -6,7 +6,10 @@ const cors = require('cors');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const app = express();
-const PORT = 3001;
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
 const DATA_FILE = path.join(__dirname, 'data.json');
 const ADMIN_VISIT_FILE = path.join(__dirname, 'admin_visitors.json');
 

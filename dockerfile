@@ -19,7 +19,7 @@ COPY images ./images
 COPY sound ./sound
 
 # (선택) 3001 포트 오픈 (서버 포트에 맞게 수정)
-EXPOSE 3001
+EXPOSE 8080
 
 # 서버 실행 (index.js 기준)
 CMD ["node", "index.js"]
