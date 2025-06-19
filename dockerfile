@@ -1,20 +1,25 @@
-# 1. Node.js 공식 이미지 사용 (버전은 필요에 따라 변경)
+# Node.js 공식 이미지 사용
 FROM node:18
 
-# 2. 작업 디렉토리 생성 및 이동
-WORKDIR /app
+# 작업 디렉토리 생성 및 이동
+WORKDIR /app/server
 
-# 3. package.json, package-lock.json 복사
-COPY package*.json ./
+# package.json, package-lock.json 복사
+COPY server/package*.json ./
 
-# 4. 의존성 설치
+# 의존성 설치
 RUN npm install
 
-# 5. 소스코드 전체 복사
-COPY . .
+# 서버 코드 복사
+COPY server/. .
 
-# 6. (선택) 3001 포트 오픈 (서버 포트에 맞게 수정)
+# 루트의 images, sound 폴더도 컨테이너에 복사
+WORKDIR /app
+COPY images ./images
+COPY sound ./sound
+
+# (선택) 3001 포트 오픈 (서버 포트에 맞게 수정)
 EXPOSE 3001
 
-# 7. 서버 실행 (시작 파일명에 맞게 수정)
+# 서버 실행 (index.js 기준)
 CMD ["node", "index.js"]
