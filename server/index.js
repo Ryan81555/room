@@ -7,9 +7,6 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 
 const app = express();
 const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
 const DATA_FILE = path.join(__dirname, 'data.json');
 const ADMIN_VISIT_FILE = path.join(__dirname, 'admin_visitors.json');
 
@@ -138,9 +135,4 @@ app.post('/api/admin-visit', (req, res) => {
 app.get('/api/admin-visitors', (req, res) => {
   const visits = readAdminVisits().filter(v => Date.now() - v.time < 20*60*1000);
   res.json(visits);
-});
-
-// 서버 실행
-app.listen(PORT, () => {
-  console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
 });
