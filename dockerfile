@@ -1,4 +1,4 @@
-# Google Cloud Run 배포용 Dockerfile
+# Google Cloud Run 배포용 Dockerfile (v2)
 # Node.js 18 버전을 기반으로 하는 공식 이미지를 사용합니다.
 FROM node:18-slim
 
