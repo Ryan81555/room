@@ -111,7 +111,7 @@
   </style>
 </head>
 <body>
-  <audio id="notifySound" src="문의사항/sound/mlg-airhorn.mp3" preload="auto"></audio>
+  <audio id="notifySound" src="sound/mlg-airhorn.mp3" preload="auto"></audio>
   <div class="request-container">
     <div class="request-title">가평 월드빌리지<br>객실 요청/문의</div>
     <div class="notice-msg">
@@ -262,54 +262,41 @@
       document.getElementById('successModal').style.display = 'none';
     };
 
-    // 관리자 비밀번호 (원하는 값으로 변경)
-const ADMIN_PASSWORD = "1579";
+    // 브라우저 푸쉬알림 권한 요청
+    if (window.Notification && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
 
-document.getElementById('adminLoginBtn').onclick = function() {
-  const pw = document.getElementById('adminPw').value;
-  if (pw === ADMIN_PASSWORD) {
-    window.location.href = "요청관리.html"; // 관리자 페이지로 이동
-  } else {
-    document.getElementById('adminLoginError').style.display = 'block';
-    document.getElementById('adminLoginError').innerText = '비밀번호가 올바르지 않습니다.';
-  }
-};
-
-// 브라우저 푸쉬알림 권한 요청
-if (window.Notification && Notification.permission !== "granted") {
-  Notification.requestPermission();
-}
-
-async function fetchRequests() {
-  const res = await fetch('/api/requests');
-  if (res.ok) {
-    const data = await res.json();
-    // 새 요청이 들어왔는지 체크
-    const newCount = data.filter(r => r.status === '대기').length;
-    if (newCount > lastRequestCount) {
-      // 사운드 알림
-      document.getElementById('notifySound').play();
-      // 푸쉬알림
-      if (window.Notification && Notification.permission === "granted") {
-        new Notification("새로운 요청이 도착했습니다!", {
-          body: "고객 요청을 확인해 주세요.",
-          icon: "assets/css/main.css" // 아이콘 경로(원하면 변경)
-        });
+    async function fetchRequests() {
+      const res = await fetch('/api/requests');
+      if (res.ok) {
+        const data = await res.json();
+        // 새 요청이 들어왔는지 체크
+        const newCount = data.filter(r => r.status === '대기').length;
+        if (newCount > lastRequestCount) {
+          // 사운드 알림
+          document.getElementById('notifySound').play();
+          // 푸쉬알림
+          if (window.Notification && Notification.permission === "granted") {
+            new Notification("새로운 요청이 도착했습니다!", {
+              body: "고객 요청을 확인해 주세요.",
+              icon: "assets/css/main.css" // 아이콘 경로(원하면 변경)
+            });
+          }
+        }
+        lastRequestCount = newCount;
+        allRequests = data;
+        renderTable();
       }
     }
-    lastRequestCount = newCount;
-    allRequests = data;
-    renderTable();
-  }
-}
 
-function openImageModal(src) {
-  document.getElementById('imgModalContent').src = src;
-  document.getElementById('imgModal').style.display = 'flex';
-}
-function closeImageModal() {
-  document.getElementById('imgModal').style.display = 'none';
-}
+    function openImageModal(src) {
+      document.getElementById('imgModalContent').src = src;
+      document.getElementById('imgModal').style.display = 'flex';
+    }
+    function closeImageModal() {
+      document.getElementById('imgModal').style.display = 'none';
+    }
   </script>
   <div id="imgModal" style="display:none; position:fixed; z-index:99999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
     <span onclick="closeImageModal()" style="position:absolute; top:24px; right:36px; color:#fff; font-size:2.5em; font-weight:700; cursor:pointer; z-index:100001;">&times;</span>
