@@ -103,7 +103,7 @@
     }
 
     async function fetchRequests() {
-      const res = await fetch('http://localhost:3001/api/requests');
+      const res = await fetch('/api/requests');
       if (res.ok) {
         const data = await res.json();
         // 새 요청이 들어왔는지 체크
@@ -146,7 +146,7 @@
     `).join('');
     }
     async function changeStatus(id, status) {
-      const res = await fetch(`http://localhost:3001/api/requests/${id}`, {
+      const res = await fetch(`/api/requests/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })

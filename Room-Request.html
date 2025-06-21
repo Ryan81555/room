@@ -242,7 +242,7 @@
       if (!room) { alert('객실번호를 입력해 주세요.'); return; }
       if (!phone) { alert('전화번호를 입력해 주세요.'); return; } // 추가
       if (!selectedType && !detail) { alert('요청사항을 선택하거나 입력해 주세요.'); return; }
-      const res = await fetch('http://localhost:3001/api/requests', {
+      const res = await fetch('/api/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ room, phone, type: selectedType || '기타', detail }) // phone 포함!
@@ -281,7 +281,7 @@ if (window.Notification && Notification.permission !== "granted") {
 }
 
 async function fetchRequests() {
-  const res = await fetch('http://localhost:3001/api/requests');
+  const res = await fetch('/api/requests');
   if (res.ok) {
     const data = await res.json();
     // 새 요청이 들어왔는지 체크
