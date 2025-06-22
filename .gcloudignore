@@ -1,0 +1,9 @@
+# This file specifies patterns for files that should be ignored by gcloud.
+# For more information, see: gcloud topic gcloudignore.
+.gcloudignore
+.git
+.gitignore
+
+# Dependencies
+node_modules/
+server/node_modules/ 
