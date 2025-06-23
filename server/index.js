@@ -15,19 +15,21 @@ const port = process.env.PORT || 8080;
 const DATA_FILE = path.join(__dirname, 'data.json');
 const ADMIN_VISIT_FILE = path.join(__dirname, 'admin_visitors.json');
 
-// === 여기 추가 ===
-app.use(express.static(__dirname)); // server 폴더 내 모든 파일 서비스
+// --- 미들웨어 설정 ---
+app.use(cors());
+app.use(express.json());
 
-const path = require('path');
+// --- 정적 파일 서비스 ---
+// server 폴더의 상위 폴더(프로젝트 루트)에 있는 모든 정적 파일을 서비스합니다.
+// 이렇게 해야 Room-Request.html, images, assets, sound 폴더를 찾을 수 있습니다.
+app.use(express.static(path.join(__dirname, '..')));
 
+// --- 라우팅 설정 ---
+
+// 루트 URL('/') 요청 시 Room-Request.html 파일을 보냅니다.
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'Room-Request.html'));
 });
-// ===============
-
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, '..')));
 
 // 데이터 파일 읽기
 function readData() {
