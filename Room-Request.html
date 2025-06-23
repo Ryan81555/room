@@ -186,6 +186,14 @@
       <button id="closeModalBtn" style="margin-top:10px;padding:10px 28px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:1em;font-weight:600;cursor:pointer;">확인</button>
     </div>
   </div>
+  <!-- 요청 실패 모달 -->
+  <div id="failureModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(239, 68, 68, 0.18);padding:38px 24px;max-width:90vw;text-align:center;">
+      <div style="font-size:1.35em;font-weight:700;color:#ef4444;margin-bottom:12px;">요청 접수에 실패했습니다.<br>잠시 후 다시 시도해 주세요.</div>
+      <div style="color:#777;margin-bottom:15px;">(3분에 1번씩 요청 가능합니다.)</div>
+      <button id="closeFailureModalBtn" style="margin-top:10px;padding:10px 28px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:1em;font-weight:600;cursor:pointer;">확인</button>
+    </div>
+  </div>
   <div class="cafe-promo" style="
   background: #fff7ed;
   border: 1.5px solid #fdba74;
@@ -254,12 +262,18 @@
         // 모달 표시
         document.getElementById('successModal').style.display = 'flex';
       } else {
-        alert('요청 접수에 실패했습니다. 다시 시도해 주세요.');
+        // 실패 모달 표시
+        document.getElementById('failureModal').style.display = 'flex';
       }
     };
     // 모달 닫기
     document.getElementById('closeModalBtn').onclick = function() {
       document.getElementById('successModal').style.display = 'none';
+    };
+
+    // 실패 모달 닫기
+    document.getElementById('closeFailureModalBtn').onclick = function() {
+      document.getElementById('failureModal').style.display = 'none';
     };
 
     // 브라우저 푸쉬알림 권한 요청
