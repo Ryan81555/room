@@ -245,7 +245,7 @@
       const res = await fetch('/api/requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ room, phone, type: selectedType || '기타', detail }) // phone 포함!
+        body: JSON.stringify({ room, phone, type: selectedType || '기타', detail })
       });
       if (res.ok) {
         document.getElementById('requestForm').reset();
