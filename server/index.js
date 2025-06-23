@@ -18,6 +18,8 @@ const ADMIN_VISIT_FILE = path.join(__dirname, 'admin_visitors.json');
 // === 여기 추가 ===
 app.use(express.static(__dirname)); // server 폴더 내 모든 파일 서비스
 
+const path = require('path');
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'Room-Request.html'));
 });
