@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>요청사항 관리 (관리자)</title>
+  <link rel="manifest" href="/Room Request/server/manifest-admin.json">
+  <meta name="theme-color" content="#4f8cff">
+  <title>크리스월드 빌리지 객실 요청/문의 관리 (관리자)</title>
   <link rel="stylesheet" href="assets/css/main.css">
   <style>
     body { background: linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%); }
@@ -168,6 +170,10 @@
     // 5초마다 자동 새로고침
     setInterval(fetchRequests, 5000);
     fetchRequests();
+    // 서비스 워커 등록
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/Room Request/server/sw-admin.js');
+    }
   </script>
 </body>
 </html>

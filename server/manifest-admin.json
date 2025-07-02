@@ -1,0 +1,20 @@
+{
+    "name": "Room Request 관리자",
+    "short_name": "관리자",
+    "start_url": "/Room Request/Room-Request-admin.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4f8cff",
+    "icons": [
+      {
+        "src": "/Room Request/assets/icons/admin-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/Room Request/assets/icons/admin-512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
