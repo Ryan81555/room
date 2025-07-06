@@ -149,3 +149,12 @@ app.get('/api/admin-visitors', (req, res) => {
 app.listen(port, () => {
   console.log(`서버가 http://localhost:${port} 에서 실행 중입니다.`);
 });
+
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'NEW_REQUEST') {
+    self.registration.showNotification('새로운 요청이 도착했습니다!', {
+      body: event.data.message || '고객 요청을 확인해 주세요.',
+      icon: '/Room Request/images/106.jpg' // 실제 아이콘 경로로 수정 가능
+    });
+  }
+}); 
