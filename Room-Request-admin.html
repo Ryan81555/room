@@ -98,7 +98,18 @@
     let allRequests = [];
     let currentTab = '대기';
     let lastRequestCount = 0;
-    let notifyLooping = false; // 알림음 반복 재생 상태 변수
+    let notifyLooping = false;
+    const audio = document.getElementById('notifySound');
+    // ended 이벤트는 최초 1회만 등록
+    if (!audio._endedEventRegistered) {
+      audio.addEventListener('ended', function() {
+        if (notifyLooping) {
+          audio.currentTime = 0;
+          audio.play();
+        }
+      });
+      audio._endedEventRegistered = true;
+    }
 
     // 브라우저 푸쉬알림 권한 요청
     if (window.Notification && Notification.permission !== "granted") {
@@ -111,27 +122,21 @@
         const data = await res.json();
         const newCount = data.filter(r => r.status === '대기').length;
 
-        const audio = document.getElementById('notifySound');
-
-        // 알림음 반복 재생 제어 (ended 이벤트 활용)
+        // 알림음 반복 재생 제어
         if (newCount > 0) {
           if (!notifyLooping) {
             notifyLooping = true;
-            audio.currentTime = 0;
-            audio.play();
-            audio.onended = function() {
-              if (notifyLooping) {
-                audio.currentTime = 0;
-                audio.play();
-              }
-            };
+            // 이미 재생 중이 아니면 play
+            if (audio.paused) {
+              audio.currentTime = 0;
+              audio.play();
+            }
           }
         } else {
           if (notifyLooping) {
             notifyLooping = false;
             audio.pause();
             audio.currentTime = 0;
-            audio.onended = null;
           }
         }
 
