@@ -98,7 +98,7 @@
     let allRequests = [];
     let currentTab = '대기';
     let lastRequestCount = 0;
-    let notifyInterval = null; // 알림음 반복 재생을 위한 변수 추가
+    let notifyLooping = false; // 알림음 반복 재생 상태 변수
 
     // 브라우저 푸쉬알림 권한 요청
     if (window.Notification && Notification.permission !== "granted") {
@@ -111,23 +111,27 @@
         const data = await res.json();
         const newCount = data.filter(r => r.status === '대기').length;
 
-        // 알림음 반복 재생 제어
+        const audio = document.getElementById('notifySound');
+
+        // 알림음 반복 재생 제어 (ended 이벤트 활용)
         if (newCount > 0) {
-          if (!notifyInterval) {
-            document.getElementById('notifySound').play();
-            notifyInterval = setInterval(() => {
-              const audio = document.getElementById('notifySound');
-              audio.currentTime = 0;
-              audio.play();
-            }, 3000); // 3초마다 반복 (필요시 간격 조정)
+          if (!notifyLooping) {
+            notifyLooping = true;
+            audio.currentTime = 0;
+            audio.play();
+            audio.onended = function() {
+              if (notifyLooping) {
+                audio.currentTime = 0;
+                audio.play();
+              }
+            };
           }
         } else {
-          if (notifyInterval) {
-            clearInterval(notifyInterval);
-            notifyInterval = null;
-            const audio = document.getElementById('notifySound');
+          if (notifyLooping) {
+            notifyLooping = false;
             audio.pause();
             audio.currentTime = 0;
+            audio.onended = null;
           }
         }
 
