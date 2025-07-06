@@ -98,6 +98,7 @@
     let allRequests = [];
     let currentTab = '대기';
     let lastRequestCount = 0;
+    let notifyInterval = null; // 알림음 반복 재생을 위한 변수 추가
 
     // 브라우저 푸쉬알림 권한 요청
     if (window.Notification && Notification.permission !== "granted") {
@@ -108,12 +109,30 @@
       const res = await fetch('/api/requests');
       if (res.ok) {
         const data = await res.json();
-        // 새 요청이 들어왔는지 체크
         const newCount = data.filter(r => r.status === '대기').length;
+
+        // 알림음 반복 재생 제어
+        if (newCount > 0) {
+          if (!notifyInterval) {
+            document.getElementById('notifySound').play();
+            notifyInterval = setInterval(() => {
+              const audio = document.getElementById('notifySound');
+              audio.currentTime = 0;
+              audio.play();
+            }, 3000); // 3초마다 반복 (필요시 간격 조정)
+          }
+        } else {
+          if (notifyInterval) {
+            clearInterval(notifyInterval);
+            notifyInterval = null;
+            const audio = document.getElementById('notifySound');
+            audio.pause();
+            audio.currentTime = 0;
+          }
+        }
+
+        // 새 요청이 들어왔는지 체크 (푸쉬알림은 기존대로 유지)
         if (newCount > lastRequestCount) {
-          // 사운드 알림
-          document.getElementById('notifySound').play();
-          // 푸쉬알림
           if (window.Notification && Notification.permission === "granted") {
             new Notification("새로운 요청이 도착했습니다!", {
               body: "고객 요청을 확인해 주세요."
