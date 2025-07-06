@@ -125,27 +125,12 @@
         const data = await res.json();
         const newCount = data.filter(r => r.status === '대기').length;
 
-        const audio = window.notifyAudio;
-        // 알림음 반복 재생 제어
-        if (newCount > 0) {
-          if (!window.notifyLooping) {
-            window.notifyLooping = true;
-            if (audio && audio.paused) {
-              audio.currentTime = 0;
-              audio.play();
-            }
-          }
-        } else {
-          if (window.notifyLooping) {
-            window.notifyLooping = false;
-            if (audio) {
-              audio.pause();
-              audio.currentTime = 0;
-            }
-          }
+        // 1. 진동 (안드로이드 크롬 등 지원 브라우저에서만 동작)
+        if (newCount > lastRequestCount && navigator.vibrate) {
+          navigator.vibrate([200, 100, 200]); // 0.2초 진동, 0.1초 멈춤, 0.2초 진동
         }
 
-        // 새 요청이 들어왔는지 체크 (푸쉬알림은 기존대로 유지)
+        // 2. 푸쉬알림 (Notification)
         if (newCount > lastRequestCount) {
           if (window.Notification && Notification.permission === "granted") {
             new Notification("새로운 요청이 도착했습니다!", {
@@ -153,6 +138,24 @@
             });
           }
         }
+
+        // 3. 백그라운드 알림 (Service Worker 메시지)
+        if (newCount > lastRequestCount && navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({
+            type: 'NEW_REQUEST',
+            message: '새로운 요청이 도착했습니다!'
+          });
+        }
+
+        // 4. 알림음 재생 (최초 1회 play)
+        if (newCount > lastRequestCount) {
+          const audio = window.notifyAudio;
+          if (audio) {
+            audio.currentTime = 0;
+            audio.play();
+          }
+        }
+
         lastRequestCount = newCount;
         allRequests = data;
         renderTable();
