@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>크리스월드 빌리지 객실 요청/문의</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+    
+    body { 
+      background: linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%); 
+      margin: 0; 
+      padding: 0; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+    }
+    
+    .request-container { 
+      max-width: 420px; 
+      margin: 0 auto; 
+      background: rgba(255,255,255,0.95); 
+      border-radius: 0; 
+      box-shadow: 0 4px 20px rgba(52,152,219,0.15); 
+      padding: 20px 16px;
+      min-height: 100vh;
+    }
+    
+    .request-title { 
+      text-align: center; 
+      color: #2563eb; 
+      margin-bottom: 20px; 
+      font-size: 1.5em; 
+      font-weight: 700;
+      padding: 16px 0;
+      background: linear-gradient(135deg, #4f8cff, #2563eb);
+      color: white;
+      border-radius: 12px;
+      margin: 0 -16px 20px -16px;
+    }
+    
+    .input-group { 
+      margin-bottom: 20px; 
+    }
+    
+    .input-label { 
+      font-weight: 600; 
+      margin-bottom: 8px; 
+      display: block; 
+      color: #1f2937;
+      font-size: 0.95em;
+    }
+    
+    .input-field, textarea { 
+      width: 100%; 
+      padding: 14px 12px; 
+      border-radius: 12px; 
+      border: 2px solid #e5e7eb; 
+      font-size: 1em;
+      transition: all 0.3s ease;
+      background: #f9fafb;
+    }
+    
+    .input-field:focus, textarea:focus {
+      outline: none;
+      border-color: #4f8cff;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.1);
+    }
+    
+    .quick-btns { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 8px; 
+      margin-bottom: 16px; 
+    }
+    
+    .quick-btn { 
+      flex: 1 1 45%; 
+      background: #f8fafc; 
+      color: #374151; 
+      border: 2px solid #e5e7eb; 
+      border-radius: 12px; 
+      padding: 12px 8px; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: all 0.3s ease; 
+      font-size: 0.9em;
+      text-align: center;
+    }
+    
+    .quick-btn.selected, .quick-btn:hover { 
+      background: linear-gradient(135deg, #4f8cff, #2563eb); 
+      color: #fff;
+      border-color: #4f8cff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(79, 140, 255, 0.3);
+    }
+    
+    .submit-btn { 
+      width: 100%; 
+      background: linear-gradient(135deg, #4f8cff, #2563eb); 
+      color: #fff; 
+      border: none; 
+      border-radius: 12px; 
+      padding: 16px 0; 
+      font-size: 1.1em; 
+      font-weight: 700; 
+      cursor: pointer; 
+      margin-top: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(79, 140, 255, 0.3);
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(79, 140, 255, 0.4);
+    }
+    
+    .submit-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    #adminLoginBox { 
+      max-width: 340px;
+      margin: 40px auto 0 auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 32px 18px; 
+    }
+    
+    .notice-msg {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 16px 12px;
+      margin-bottom: 20px;
+      font-size: 0.95em;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .notice-guide {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: #1e40af;
+      border: 2px solid #60a5fa;
+      border-radius: 12px;
+      padding: 16px 12px;
+      margin-bottom: 20px;
+      font-size: 0.95em;
+      text-align: center;
+    }
+    
+    .notice-guide h3 {
+      margin: 0 0 12px 0;
+      font-size: 1.1em;
+      color: #1e40af;
+    }
+    
+    .notice-guide p {
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+    
+    .notice-guide hr {
+      border: none;
+      border-top: 1px solid #60a5fa;
+      margin: 16px 0;
+    }
+    
+    @media (max-width: 700px) {
+      .request-container { 
+        max-width: 100vw; 
+        padding: 16px 12px; 
+        border-radius: 0; 
+        box-shadow: none; 
+        margin: 0; 
+      }
+      
+      .request-title { 
+        font-size: 1.3em; 
+        padding: 12px 0;
+        margin: 0 -12px 16px -12px;
+        border-radius: 0;
+      }
+      
+      .input-field, textarea { 
+        font-size: 1em; 
+        padding: 16px 12px; 
+      }
+      
+      .quick-btns { 
+        flex-direction: column; 
+        gap: 8px; 
+      }
+      
+      .quick-btn { 
+        width: 100%; 
+        min-width: 0; 
+        font-size: 0.95em; 
+        padding: 14px 8px; 
+      }
+      
+      .submit-btn { 
+        font-size: 1.05em; 
+        padding: 18px 0; 
+      }
+      
+      #adminLoginBox { 
+        max-width: 100vw; 
+        border-radius: 0; 
+        box-shadow: none; 
+        margin: 0; 
+      }
+      
+      .cafe-promo {
+        padding: 16px 12px !important;
+        font-size: 0.95em !important;
+      }
+      
+      .cafe-promo img {
+        width: 100% !important;
+        max-width: 100vw !important;
+        height: auto !important;
+      }
+      
+      .cafe-gallery {
+        flex-wrap: wrap;
+        gap: 8px !important;
+      }
+      
+      .cafe-gallery img {
+        width: calc(50% - 4px) !important;
+        max-width: 160px !important;
+        min-width: 120px !important;
+        margin-bottom: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <audio id="notifySound" src="sound/mlg-airhorn.mp3" preload="auto"></audio>
+  <div class="request-container">
+    <div class="request-title">🏨 크리스월드 빌리지<br>객실 요청/문의</div>
+    
+    <div class="notice-msg">
+      ⚠️ 원활한 서비스 제공과 시스템 안정화를 위해 <br>
+      문의 및 요청사항 접수는 <strong>3분에 한 번</strong>으로 제한됩니다.<br><br>
+      짧은 시간에 중복 요청 시 시스템에 과부하가 발생하거나 <br>
+      요청이 누락될 수 있으니, 이용자 여러분의 너그러운 양해 부탁드립니다.<br><br>
+      <span style="color:#dc2626; font-weight: 600;">잠시 후 다시 시도해 주시면 감사하겠습니다.</span>
+    </div>
+    
+    <div class="notice-guide">
+      <h3>📋 초간단 요청사항 및 문의사항 방법</h3>
+      
+      <p>
+        <strong>1️⃣ 내 정보 입력</strong><br>
+        동/호수와 전화번호를 정확히 적어주세요.
+      </p>
+      
+      <p>
+        <strong>2️⃣ 요청사항 선택</strong><br>
+        자주 있는 요청 버튼을 누르거나, <br>
+        아래 기타 요청사항에 직접 입력하세요.
+      </p>
+      
+      <p>
+        <strong>3️⃣ 전송하면 끝!</strong><br>
+        파란색 요청하기 버튼을 누르면 <br>
+        바로 접수됩니다.
+      </p>
+      
+      <hr>
+      
+      <p>
+        <strong>⭐ 중요:</strong> 원활한 처리를 위해<br> 
+        요청은 3분에 한 번씩만 가능합니다!
+      </p>
+    </div>
+    
+    <form id="requestForm">
+      <div class="input-group">
+        <label class="input-label" for="room">🏠 동/호수</label>
+        <input class="input-field" type="text" id="room" name="room" placeholder="예: C동 101" required>
+      </div>
+      
+      <div class="input-group">
+        <label class="input-label" for="phone">📞 전화번호</label>
+        <input class="input-field" type="tel" id="phone" name="phone" placeholder="예: 010-1234-5678" required>
+      </div>
+      
+      <div class="input-group">
+        <span class="input-label">⚡ 자주 있는 요청</span>
+        <div class="quick-btns">
+          <button type="button" class="quick-btn" data-type="예약상담">📅 예약상담</button>
+          <button type="button" class="quick-btn" data-type="휴지가 없어요">🧻 휴지가 없어요</button>
+          <button type="button" class="quick-btn" data-type="TV가 안 나와요">📺 TV가 안 나와요</button>
+          <button type="button" class="quick-btn" data-type="변기가 막혔어요">🚽 변기가 막혔어요</button>
+          <button type="button" class="quick-btn" data-type="화장실 문이 잠겼어요">🔒 화장실 문이 잠겼어요</button>
+          <button type="button" class="quick-btn" data-type="침구류를 추가하고 싶어요.">🛏️ 침구류 추가</button>
+          <button type="button" class="quick-btn" data-type="에어컨/난방이 잘 안 돼요.">❄️ 에어컨/난방</button>
+          <button type="button" class="quick-btn" data-type="와이파이가 연결되지 않아요.">📶 와이파이 연결</button>
+          <button type="button" class="quick-btn" data-type="인덕션 작동하지 않아요.">🔥 인덕션 작동</button>
+          <button type="button" class="quick-btn" data-type="다른 객실이 너무 시끄러워요.">🔇 소음 문의</button>
+          <button type="button" class="quick-btn" data-type="온수가 안나와요">🚿 온수 문의</button>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label class="input-label" for="detail">📝 기타 요청사항</label>
+        <textarea id="detail" name="detail" rows="4" placeholder="기타 요청사항을 입력해 주세요."></textarea>
+      </div>
+      
+      <button type="submit" class="submit-btn" id="submitBtn">📤 요청하기</button>
+    </form>
+    
+    <div id="resultMsg" style="display:none;"></div>
+  </div>
+  
+  <!-- 요청 완료 모달 -->
+  <div id="successModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(34,197,94,0.2);padding:32px 24px;max-width:90vw;text-align:center;">
+      <div style="font-size:1.3em;font-weight:700;color:#16a34a;margin-bottom:16px;">✅ 정상적으로 요청이 완료되었습니다!</div>
+      <div style="color:#64748b;margin-bottom:20px;font-size:0.95em;">원활한 서비스 제공을 위해 요청은 3분에 한 번씩만 가능합니다.</div>
+      <button id="closeModalBtn" style="padding:12px 32px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:none;border-radius:12px;font-size:1em;font-weight:600;cursor:pointer;transition:all 0.3s ease;">확인</button>
+    </div>
+  </div>
+  
+  <!-- 요청 실패 모달 -->
+  <div id="failureModal" style="display:none;position:fixed;z-index:9999;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(239,68,68,0.2);padding:32px 24px;max-width:90vw;text-align:center;">
+      <div style="font-size:1.3em;font-weight:700;color:#dc2626;margin-bottom:16px;">❌ 요청 접수에 실패했습니다.</div>
+      <div style="color:#64748b;margin-bottom:20px;font-size:0.95em;">잠시 후 다시 시도해 주세요. (3분에 1번씩 요청 가능합니다.)</div>
+      <button id="closeFailureModalBtn" style="padding:12px 32px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:12px;font-size:1em;font-weight:600;cursor:pointer;transition:all 0.3s ease;">확인</button>
+    </div>
+  </div>
+  
+  <div class="cafe-promo" style="
+    background: linear-gradient(135deg, #fff7ed, #fed7aa);
+    border: 2px solid #fdba74;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 20px 16px;
+    text-align: center;
+    color: #92400e;
+    font-weight: 600;
+    font-size: 1.05em;
+  ">
+    <div style="margin-bottom: 16px;">
+      <strong>☕ 카페 크리스월드</strong><br>
+      <span style="font-size: 0.9em; color: #a16207;">맛있는 커피와 함께하는 특별한 시간</span>
+    </div>
+    
+    <div class="cafe-gallery" style="
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    ">
+      <img src="images/101.jpg" alt="카페 이미지 1" style="width: 120px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid #fdba74;">
+      <img src="images/102.jpg" alt="카페 이미지 2" style="width: 120px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid #fdba74;">
+      <img src="images/104.jpg" alt="카페 이미지 3" style="width: 120px; height: 90px; object-fit: cover; border-radius: 8px; border: 2px solid #fdba74;">
+    </div>
+    
+    <div style="margin-top: 16px; font-size: 0.9em; color: #a16207;">
+      🕐 영업시간: 08:00 - 22:00<br>
+      📍 위치: 1층 로비 옆
+    </div>
+  </div>
+
+  <script>
+    let selectedType = '';
+    let canSubmit = true;
+    let submitTimeout;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const audio = document.getElementById('notifySound');
+      if (!audio._endedEventRegistered) {
+        audio.addEventListener('ended', function() {
+          if (window.notifyLooping) {
+            audio.currentTime = 0;
+            audio.play();
+          }
+        });
+        audio._endedEventRegistered = true;
+      }
+      window.notifyAudio = audio;
+      window.notifyLooping = false;
+    });
+
+    // 브라우저 푸쉬알림 권한 요청
+    if (window.Notification && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
+    document.querySelectorAll('.quick-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedType = this.getAttribute('data-type');
+        document.getElementById('detail').value = selectedType;
+      });
+    });
+
+    document.getElementById('requestForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!canSubmit) {
+        showFailureModal();
+        return;
+      }
+
+      const formData = new FormData(this);
+      const data = {
+        room: formData.get('room'),
+        phone: formData.get('phone'),
+        type: selectedType || '기타',
+        detail: formData.get('detail')
+      };
+
+      try {
+        const response = await fetch('/api/requests', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          showSuccessModal();
+          this.reset();
+          selectedType = '';
+          document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('selected'));
+          
+          // 3분간 제출 비활성화
+          canSubmit = false;
+          const submitBtn = document.getElementById('submitBtn');
+          submitBtn.disabled = true;
+          submitBtn.textContent = '⏳ 3분 대기 중...';
+          
+          let timeLeft = 180; // 3분 = 180초
+          submitTimeout = setInterval(() => {
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            submitBtn.textContent = `⏳ ${minutes}:${seconds.toString().padStart(2, '0')} 대기 중...`;
+            
+            if (timeLeft <= 0) {
+              clearInterval(submitTimeout);
+              canSubmit = true;
+              submitBtn.disabled = false;
+              submitBtn.textContent = '📤 요청하기';
+            }
+          }, 1000);
+          
+        } else {
+          showFailureModal();
+        }
+      } catch (error) {
+        console.error('요청 전송 중 오류:', error);
+        showFailureModal();
+      }
+    });
+
+    function showSuccessModal() {
+      const modal = document.getElementById('successModal');
+      modal.style.display = 'flex';
+      
+      // 알림음 재생
+      const audio = window.notifyAudio;
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play();
+      }
+      
+      // 진동 (지원하는 경우)
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]);
+      }
+      
+      // 푸시 알림
+      if (window.Notification && Notification.permission === "granted") {
+        new Notification("요청이 성공적으로 접수되었습니다!", {
+          body: "빠른 시일 내에 처리해드리겠습니다.",
+          icon: "/Room Request/images/101.jpg"
+        });
+      }
+    }
+
+    function showFailureModal() {
+      const modal = document.getElementById('failureModal');
+      modal.style.display = 'flex';
+    }
+
+    document.getElementById('closeModalBtn').addEventListener('click', function() {
+      document.getElementById('successModal').style.display = 'none';
+    });
+
+    document.getElementById('closeFailureModalBtn').addEventListener('click', function() {
+      document.getElementById('failureModal').style.display = 'none';
+    });
+
+    // 서비스 워커 등록
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/Room Request/server/sw.js');
+    }
+  </script>
+</body>
+</html> 
